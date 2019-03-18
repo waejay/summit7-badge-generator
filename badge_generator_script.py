@@ -1,5 +1,6 @@
 import sys
 import requests
+import csv
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 
@@ -8,7 +9,7 @@ def draw_badge_template(family_name):
     # default for test purposes
     # family_name = "virgo"
     
-    badge_template_image = Image.open(family_name + "_badge_template.png", mode = 'r')
+    badge_template_image = Image.open("badge_templates/" + family_name + ".png", mode = 'r')
 
     return badge_template_image
 
@@ -18,10 +19,7 @@ def draw_profile_picture(image, url=""):
     # coordinates to draw profile picture
     coord = (228, 387)
     
-    # profile picture (from URL)
-    profile_picture_url   = "http://graph.facebook.com/2295395780480331/picture?width=500&height=500"
-
-    profile_picture       = requests.get(profile_picture_url)
+    profile_picture       = requests.get(url)
     profile_picture_image = Image.open(BytesIO(profile_picture.content))
     profile_picture_image = profile_picture_image.resize((527, 507))
     
@@ -31,21 +29,50 @@ def draw_name(image, name):
     fontPath      = 'fonts/leaguespartan-bold.ttf'
     leagueSpartan = ImageFont.truetype(fontPath, 40)
 
-    # attendee name
-    name = "John Nguyen"
     attendee_name = ImageDraw.Draw(image)
-    w, h = leagueSpartan.getsize(name)
-    attendee_name.text(((1010 - w) / 2,950), name, font=leagueSpartan )
+    w, h = leagueSpartan.getsize(name.upper())
+    attendee_name.text(((1000 - w) / 2,940), name.upper(), font=leagueSpartan )
 
     image.save("test_user_badge.png")
 
 def main():
-
-    badge = draw_badge_template("virgo")
-    draw_profile_picture(badge)
-    draw_name(badge, "John Nguyen")
     
-    badge.save("test_user_badge.png")
+    family_to_generate = "virgo"
+    
+    # read attendee data into dict
+    with open('attendee_data.csv', encoding='latin1') as csv_file:
+
+        # dictionary reader
+        csv_reader = csv.DictReader(csv_file)
+        
+        # set 1 to skip header line
+        line_count = 1
+
+        # get each attendee info
+        for attendee in csv_reader:            
+
+            # print name if in specified family
+            if attendee["family_name"].lower() == family_to_generate:
+                print(f"{attendee['first_name']} {attendee['last_name']} is in Virgo!")
+                 
+                # ----- generate badge -----
+
+                family_name  = ""
+                url = attendee["img"]
+                name = attendee["first_name"] + " " + attendee["last_name"]
+
+                if (attendee["code"].lower() == "fl16"):
+                    family_name = family_to_generate + "_leader"                    
+                else:
+                    family_name = family_to_generate + "_attendee"
+
+                badge = draw_badge_template(family_name)
+                draw_profile_picture(badge, url)
+                draw_name(badge, name)
+
+                badge.save(family_name + "_" + name + ".png")
+
+
 
     print("\nEnd of program.")
 

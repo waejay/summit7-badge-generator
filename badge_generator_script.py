@@ -1,4 +1,5 @@
 import sys
+import os
 import requests
 import csv
 from PIL import Image, ImageDraw, ImageFont
@@ -37,7 +38,7 @@ def draw_name(image, name):
 
 def main():
     
-    family_to_generate = "virgo"
+    family_to_generate = ""
     
     # read attendee data into dict
     with open('attendee_data.csv', encoding='latin1') as csv_file:
@@ -51,10 +52,17 @@ def main():
         # get each attendee info
         for attendee in csv_reader:            
 
-            # print name if in specified family
+            # generate family badges
             if attendee["family_name"].lower() == family_to_generate:
-                print(f"{attendee['first_name']} {attendee['last_name']} is in Virgo!")
+                print(f"{attendee['first_name']} {attendee['last_name']} is in " + family_to_generate + "!")
                  
+                
+                # check if attendee is missing profile pic URL
+                if (attendee["img"].lower() == "null"):
+                    print(f"ERROR: The following attendee is missing profile picture URL: {attendee['first_name']} {attendee['last_name']})")
+                    
+                    continue
+
                 # ----- generate badge -----
 
                 family_name  = ""
@@ -69,10 +77,31 @@ def main():
                 badge = draw_badge_template(family_name)
                 draw_profile_picture(badge, url)
                 draw_name(badge, name)
+                
+                badge.save("badges_final/" + family_to_generate + "/" + family_name + "_" + name + ".png")
 
-                badge.save(family_name + "_" + name + ".png")
+            # generate non-family badges
+            elif attendee["family_name"] == "null":
+                
+                # if attendee is VIP
+                if attendee["code"] == "VIPALUM":
 
+                    badge = draw_badge_template("to-add/vip")
+                    draw_profile_picture(badge, attendee["img"])
+                    draw_name(badge, attendee["first_name"] + " " + attendee["last_name"])
 
+                    badge.save("badges_final/STAFF/VIP/" + attendee["first_name"] + " " + attendee["last_name"] + ".png")
+                elif attendee["code"] == "LS7Staff":
+                    
+                    print(f"generating {attendee['first_name']} {attendee['last_name']}'s badge...")
+                    if (attendee["img"] == "null"):
+                        print(f"ERROR: {attendee['first_name']} {attendee['last_name']} is missing image...continuing")
+                        continue
+                    badge = draw_badge_template("to-add/staff")
+                    draw_profile_picture(badge, attendee["img"])
+                    draw_name(badge, attendee["first_name"] + " " + attendee["last_name"])
+
+                    badge.save("badges_final/STAFF/" + attendee["first_name"] + " " + attendee["last_name"] + ".png")
 
     print("\nEnd of program.")
 

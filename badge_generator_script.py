@@ -1,27 +1,51 @@
 import sys
 import requests
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 
+def draw_badge_template(family_name):
+   
+    # default for test purposes
+    # family_name = "virgo"
+    
+    badge_template_image = Image.open(family_name + "_badge_template.png", mode = 'r')
 
-def main():
+    return badge_template_image
 
-    # badge template 
-    badge_template_image  = Image.open('virgo_badge_template.png', mode = 'r')
 
+def draw_profile_picture(image, url=""):
+
+    # coordinates to draw profile picture
+    coord = (228, 387)
+    
     # profile picture (from URL)
     profile_picture_url   = "http://graph.facebook.com/2295395780480331/picture?width=500&height=500"
+
     profile_picture       = requests.get(profile_picture_url)
     profile_picture_image = Image.open(BytesIO(profile_picture.content))
     profile_picture_image = profile_picture_image.resize((527, 507))
+    
+    image.paste(profile_picture_image, coord) 
+    
+def draw_name(image, name):
+    fontPath      = 'fonts/leaguespartan-bold.ttf'
+    leagueSpartan = ImageFont.truetype(fontPath, 40)
 
     # attendee name
-    attendee_name         = ImageDraw.Draw(badge_template_image)
-    attendee_name.text((0,0), "Jon Ananta")
+    name = "This is center center is This"
+    attendee_name = ImageDraw.Draw(image)
+    w, h = attendee_name.textsize(name)
+    attendee_name.text(((685 - w) / 2, 980), name, font=leagueSpartan )
 
-    badge_template_image.paste(profile_picture_image, (228, 387))
+    image.save("test_user_badge.png")
 
-    badge_template_image.save("test_user_badge.png")
+def main():
+
+    badge = draw_badge_template("virgo")
+    draw_profile_picture(badge)
+    draw_name(badge, "John Nguyen")
+    
+    badge.save("test_user_badge.png")
 
     print("\nEnd of program.")
 

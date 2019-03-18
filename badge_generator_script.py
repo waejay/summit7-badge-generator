@@ -32,10 +32,10 @@ def draw_name(image, name):
     leagueSpartan = ImageFont.truetype(fontPath, 40)
 
     # attendee name
-    name = "This is center center is This"
+    name = "John Nguyen"
     attendee_name = ImageDraw.Draw(image)
-    w, h = attendee_name.textsize(name)
-    attendee_name.text(((685 - w) / 2, 980), name, font=leagueSpartan )
+    w, h = leagueSpartan.getsize(name)
+    attendee_name.text(((1010 - w) / 2,950), name, font=leagueSpartan )
 
     image.save("test_user_badge.png")
 

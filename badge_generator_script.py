@@ -36,7 +36,7 @@ def draw_name(image, name):
 
     image.save("test_user_badge.png")
 
-def main():
+def generate():
     
     family_to_generate = ""
     
@@ -104,6 +104,51 @@ def main():
                     badge.save("badges_final/STAFF/" + attendee["first_name"] + " " + attendee["last_name"] + ".png")
 
     print("\nEnd of program.")
+
+
+def print_schools():
+
+    with open('attendee_data.csv', encoding='latin1') as csv_file:
+
+        # dictionary reader
+        csv_reader = csv.DictReader(csv_file)
+        
+        # set 1 to skip header line
+        line_count = 1
+
+        schools = set()
+
+        utd_names       = ['university of texas in dallas', 'university of texas at dallas', 'utd',
+                'dallas']
+        baylor_names    = ['baylor', 'baylor university', 'the baylor university']
+        uh_names        = ['uh', 'university of houston', 'the university of houston', 'houston']        
+        uta_names       = ['uta', 'the university of texas in arlington', 'the university of texas at arlington', 'university of texas in arlington', 'university of texas at arlington', 'university of texas arlington', 'the university of texas arlington', 'arlington']
+
+        
+
+
+        # get each attendee info
+        for attendee in csv_reader:
+            if attendee["school"].lower() in utd_names:
+                schools.add("University of Texas in Dallas")
+            elif attendee["school"].lower() in baylor_names:
+                schools.add("Baylor University")
+            elif attendee["school"].lower() in uh_names:
+                schools.add("University of Houston")
+            elif attendee["school"].lower() in uta_names:
+                schools.add("University of Texas in Arlington")
+            else:
+                schools.add(attendee["school"])
+        
+        schools = sorted(schools)
+        for school in schools:
+            print(school)
+
+def main():
+    # generate badges
+    # generate()
+    
+    print_schools()   
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ def draw_badge_template(family_name):
 def draw_profile_picture(image, url=""):
 
     # coordinates to draw profile picture
-    coord = (228, 397)
+    coord = (230, 385)
     
     profile_picture       = requests.get(url)
     profile_picture_image = Image.open(BytesIO(profile_picture.content))
@@ -38,14 +38,13 @@ def draw_name(image, name):
 
 def generate():
     
-    families = ["aries", "capricornus", "draco", "hercules", "leo", "monoceros", "orion", "pavo", "pegasus",
+    families = ["capricornus", "draco", "hercules", "leo", "monoceros", "orion", "pavo", "pegasus",
                 "perseus", "phoenix", "pisces", "virgo", "tropy"]
 
     families_other = ["big_dipper", "little_dipper"] # Add these separate b/c of name issues
 
     list_of_missing_profile_pictures = []
 
-    family_to_generate = ""
     
     # read attendee data into dict
     with open('attendee_data_v2.csv', encoding='latin1') as csv_file:
@@ -59,11 +58,10 @@ def generate():
         # get each attendee info
         for attendee in csv_reader:            
 
-
+            family_to_generate = "null"
+            '''
             # generate family badges
-            if attendee["family_name"].lower() in families :
-
-                family_to_generate = attendee["family_name"].lower()
+            if attendee["family_name"].lower() == family_to_generate:
 
                 print(f"{attendee['first_name']} {attendee['last_name']} is in " + family_to_generate + "!")
                  
@@ -92,8 +90,7 @@ def generate():
                 draw_name(badge, name)
                 
                 badge.save("badges_final/" + family_to_generate + "/" + family_name + "_" + name + ".png")
-
-
+            '''
             # generate non-family badges
             if attendee["family_name"] == "null":
                 
@@ -104,7 +101,8 @@ def generate():
                     draw_profile_picture(badge, attendee["img"])
                     draw_name(badge, attendee["first_name"] + " " + attendee["last_name"])
 
-                    badge.save("badges_final/STAFF/VIP/" + attendee["first_name"] + " " + attendee["last_name"] + ".png")
+                    badge.save("badges_final/FINAL/staff/vip/vip_" + attendee["first_name"] + " " + attendee["last_name"] + ".png")
+                '''
                 elif attendee["code"] == "LS7Staff":
                     
                     print(f"generating {attendee['first_name']} {attendee['last_name']}'s badge...")
@@ -116,8 +114,7 @@ def generate():
                     draw_name(badge, attendee["first_name"] + " " + attendee["last_name"])
 
                     badge.save("badges_final/STAFF/" + attendee["first_name"] + " " + attendee["last_name"] + ".png")
-
-
+                '''
 
     print("Here is a list of missing profile pictures: ")
     for attendee in list_of_missing_profile_pictures:
@@ -136,9 +133,7 @@ def print_schools():
         
         # set 1 to skip header line
         line_count = 1
-
-        schools = set()
-
+        schools = set() 
         utd_names       = ['university of texas in dallas', 'university of texas at dallas', 'utd',
                 'dallas']
         baylor_names    = ['baylor', 'baylor university', 'the baylor university']

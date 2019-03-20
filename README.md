@@ -6,12 +6,12 @@ The python scripts here were used to generate around ~300 attendee badges, each 
 
 There are few requirements to try this script out yourself. For a beginner without any experience, pull up your Mac's terminal (if you're using Windows, I can't help you there mate) and run the following (using Homebrew):
 
-'''
+```
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 $ brew install python
 $ brew install libtiff libjpeg webp little-cms2
 $ pip install Pillow
-'''
+```
 
 ### Prerequisites
 

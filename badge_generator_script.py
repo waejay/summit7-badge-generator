@@ -18,7 +18,7 @@ def draw_badge_template(family_name):
 def draw_profile_picture(image, url=""):
 
     # coordinates to draw profile picture
-    coord = (228, 387)
+    coord = (228, 397)
     
     profile_picture       = requests.get(url)
     profile_picture_image = Image.open(BytesIO(profile_picture.content))
@@ -38,10 +38,17 @@ def draw_name(image, name):
 
 def generate():
     
+    families = ["aries", "capricornus", "draco", "hercules", "leo", "monoceros", "orion", "pavo", "pegasus",
+                "perseus", "phoenix", "pisces", "virgo", "tropy"]
+
+    families_other = ["big_dipper", "little_dipper"] # Add these separate b/c of name issues
+
+    list_of_missing_profile_pictures = []
+
     family_to_generate = ""
     
     # read attendee data into dict
-    with open('attendee_data.csv', encoding='latin1') as csv_file:
+    with open('attendee_data_v2.csv', encoding='latin1') as csv_file:
 
         # dictionary reader
         csv_reader = csv.DictReader(csv_file)
@@ -52,14 +59,20 @@ def generate():
         # get each attendee info
         for attendee in csv_reader:            
 
+
             # generate family badges
-            if attendee["family_name"].lower() == family_to_generate:
+            if attendee["family_name"].lower() in families :
+
+                family_to_generate = attendee["family_name"].lower()
+
                 print(f"{attendee['first_name']} {attendee['last_name']} is in " + family_to_generate + "!")
                  
                 
                 # check if attendee is missing profile pic URL
                 if (attendee["img"].lower() == "null"):
                     print(f"ERROR: The following attendee is missing profile picture URL: {attendee['first_name']} {attendee['last_name']})")
+                    list_of_missing_profile_pictures.append(attendee["first_name"] + " " 
+                            + attendee["last_name"] + ": " + attendee["family_name"])
                     
                     continue
 
@@ -80,8 +93,9 @@ def generate():
                 
                 badge.save("badges_final/" + family_to_generate + "/" + family_name + "_" + name + ".png")
 
+
             # generate non-family badges
-            elif attendee["family_name"] == "null":
+            if attendee["family_name"] == "null":
                 
                 # if attendee is VIP
                 if attendee["code"] == "VIPALUM":
@@ -97,11 +111,18 @@ def generate():
                     if (attendee["img"] == "null"):
                         print(f"ERROR: {attendee['first_name']} {attendee['last_name']} is missing image...continuing")
                         continue
-                    badge = draw_badge_template("to-add/staff")
+                    badge = draw_badge_template("staff")
                     draw_profile_picture(badge, attendee["img"])
                     draw_name(badge, attendee["first_name"] + " " + attendee["last_name"])
 
                     badge.save("badges_final/STAFF/" + attendee["first_name"] + " " + attendee["last_name"] + ".png")
+
+
+
+    print("Here is a list of missing profile pictures: ")
+    for attendee in list_of_missing_profile_pictures:
+        print(attendee)
+
 
     print("\nEnd of program.")
 
@@ -146,9 +167,9 @@ def print_schools():
 
 def main():
     # generate badges
-    # generate()
+    generate()
     
-    print_schools()   
+    ## print_schools()   
 
 
 if __name__ == "__main__":

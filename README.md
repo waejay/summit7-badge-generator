@@ -26,8 +26,8 @@ The following files are the core files used by the script:
 
 ## Running the script
 
-The script was mainly used by me (and no one else), thus this script requires in-code modification between each time the script is run. 
+The script was mainly used by me (and no one else), thus this script requires in-code modification between each time the script is run. A lot of the code is messy (with comments everywhere). In *badge_generator_script.py*, you'll primarily be changing *family_to_generate* to each specific family. Other things include uncommenting blocks of code to generate a specific set of badges, changing **draw_profile_pic.coord(x_coord, y_coord)**'s values to fit each badge template (because for some reason the MEDIA team didn't make the templates consistent), and modifying the directories for specific lines of codes.
 
 ## Authors
 
-* **John Bao Nguyen** - *Initial work* - [waejay](https://github.com/waejay)
+* **John Bao Nguyen** - [waejay](https://github.com/waejay)
